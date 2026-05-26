@@ -747,7 +747,7 @@ function toggleJrnlMerge() {
   jrnlMerge = !jrnlMerge;
   const btn = document.getElementById('jrnlMergeBtn');
   if (btn) {
-    btn.textContent       = '합산 ' + (jrnlMerge ? 'ON' : 'OFF');
+    btn.textContent       = jrnlMerge ? '합산 해제' : '합산하기';
     btn.style.background  = jrnlMerge ? '#f59e0b20' : '#1e293b';
     btn.style.borderColor = jrnlMerge ? '#f59e0b50' : '#334155';
     btn.style.color       = jrnlMerge ? 'var(--gold)' : '#94a3b8';
@@ -869,9 +869,13 @@ function renderJrnlList() {
         pnlInline = `<span style="color:${c};font-weight:700"> · ${pct>=0?'+':''}${pct.toFixed(1)}% ${sign}₩${Math.abs(Math.round(pnlAmt)).toLocaleString()}</span>`;
       }
     }
-    const mergeBadge = (jrnlMerge && tx.count>1)
-      ? `<span style="font-size:10px;color:#5a6b7e;font-weight:400;margin-left:3px">×${tx.count} avg ₩${Math.round(tx.avgPrice).toLocaleString()}</span>`
-      : '';
+    let mergeBadge = '';
+    if (jrnlMerge) {
+      const countPart = tx.count > 1 ? `×${tx.count} ` : '';
+      mergeBadge = `<span style="font-size:10px;color:#94a3b8;font-weight:400;margin-left:3px">${countPart}평균 ₩${Math.round(tx.avgPrice).toLocaleString()}</span>`;
+    } else {
+      mergeBadge = `<span style="font-size:10px;color:#5a6b7e;font-weight:400;margin-left:3px">단가 ₩${Math.round(tx.avgPrice).toLocaleString()}</span>`;
+    }
 
     return `<div class="jrnl-tx-row">
       <div class="jrnl-tx-left">
@@ -952,7 +956,7 @@ function renderJrnlList() {
     </div>
     <div class="jrnl-merge-row">
       <button class="jrnl-merge-btn" id="jrnlMergeBtn" onclick="toggleJrnlMerge()"
-        style="${jrnlMerge?'background:#f59e0b20;border-color:#f59e0b50;color:var(--gold)':''}">합산 ${jrnlMerge?'ON':'OFF'}</button>
+        style="${jrnlMerge?'background:#f59e0b20;border-color:#f59e0b50;color:var(--gold)':''}">${jrnlMerge?'합산 해제':'합산하기'}</button>
     </div>
     ${listHtml}
   `;
